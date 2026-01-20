@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Rotating Love Heart</title>
+<title>Orbiting Love Heart</title>
 
 <style>
 body {
@@ -16,71 +16,76 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Main container */
 #ui {
   position: relative;
   width: 320px;
   height: 320px;
-  animation: rotateHeart 14s linear infinite;
 }
 
-/* Remove list styling */
-#ui ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Love text */
-#ui .love_word {
+/* Love text style */
+.love_word {
   position: absolute;
   color: #ff8fb1;
   font-size: 18px;
   letter-spacing: 2px;
   white-space: nowrap;
-  text-shadow: 0 0 10px #fff;
-}
-
-/* Rotation animation */
-@keyframes rotateHeart {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  text-shadow: 0 0 12px #fff;
 }
 </style>
 </head>
 
 <body>
 
-<div id="ui">
-  <ul id="heart"></ul>
-</div>
+<div id="ui"></div>
 
 <script>
-const heart = document.getElementById("heart");
-const points = 120;
+const ui = document.getElementById("ui");
+const total = 120;
 const text = "I love you ";
+const speed = 0.0015; // orbit speed
 
-for (let i = 0; i < points; i++) {
-  const li = document.createElement("li");
-  li.className = "love_word";
-  li.innerText = text;
+let startTime = Date.now();
 
-  const t = (i / points) * Math.PI * 2;
-
-  // Heart formula
-  const x = 16 * Math.pow(Math.sin(t), 3);
-  const y = -(13 * Math.cos(t) 
-            - 5 * Math.cos(2*t) 
-            - 2 * Math.cos(3*t) 
-            - Math.cos(4*t));
-
-  li.style.left = 160 + x * 8 + "px";
-  li.style.top  = 160 + y * 8 + "px";
-  li.style.transform = `rotate(${i * 3}deg)`;
-
-  heart.appendChild(li);
+function heart(t) {
+  return {
+    x: 16 * Math.pow(Math.sin(t), 3),
+    y: -(13 * Math.cos(t)
+       - 5 * Math.cos(2*t)
+       - 2 * Math.cos(3*t)
+       - Math.cos(4*t))
+  };
 }
+
+// Create elements
+const words = [];
+for (let i = 0; i < total; i++) {
+  const span = document.createElement("span");
+  span.className = "love_word";
+  span.innerText = text;
+  ui.appendChild(span);
+  words.push({ el: span, offset: i });
+}
+
+// Animate orbit
+function animate() {
+  const time = (Date.now() - startTime) * speed;
+
+  words.forEach((w, i) => {
+    const t = time + (i / total) * Math.PI * 2;
+    const p = heart(t);
+
+    w.el.style.left = 160 + p.x * 8 + "px";
+    w.el.style.top  = 160 + p.y * 8 + "px";
+    w.el.style.transform = `rotate(${t * 40}deg)`;
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
 </script>
 
 </body>
 </html>
+
+
