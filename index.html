@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Love Heart Flow</title>
+<title>Vertical Love Heart Flow</title>
 
 <style>
 body {
@@ -16,27 +16,27 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Perspective container */
+/* Perspective */
 #scene {
-  perspective: 800px;
+  perspective: 1000px;
 }
 
-/* Heart holder */
+/* Heart container */
 #ui {
   position: relative;
-  width: 360px;
-  height: 360px;
-  transform: rotateX(55deg);
+  width: 420px;   /* bigger */
+  height: 420px;  /* bigger */
+  transform: rotateX(25deg); /* more vertical */
 }
 
 /* Text style */
 .love {
   position: absolute;
   color: #ff8fb1;
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: 2px;
   white-space: nowrap;
-  text-shadow: 0 0 10px #fff;
+  text-shadow: 0 0 14px #fff;
 }
 </style>
 </head>
@@ -50,15 +50,15 @@ body {
 <script>
 const ui = document.getElementById("ui");
 
-const COUNT = 180;          // number of text segments
+const COUNT = 200;          // more text
 const TEXT  = "I love you ";
-const SPEED = 0.002;        // flow speed
-const SCALE = 9;            // heart size
+const SPEED = 0.0009;       // 🔽 slower speed
+const SCALE = 12;           // 🔼 bigger heart
 
 let start = Date.now();
 const items = [];
 
-/* Heart math */
+/* Heart formula */
 function heart(t) {
   return {
     x: 16 * Math.pow(Math.sin(t), 3),
@@ -69,7 +69,7 @@ function heart(t) {
   };
 }
 
-/* Create flowing text */
+/* Create text elements */
 for (let i = 0; i < COUNT; i++) {
   const span = document.createElement("span");
   span.className = "love";
@@ -82,16 +82,16 @@ for (let i = 0; i < COUNT; i++) {
 function animate() {
   const time = (Date.now() - start) * SPEED;
 
-  items.forEach((item, i) => {
+  items.forEach((item) => {
     const t = (item.offset * Math.PI * 2 + time) % (Math.PI * 2);
     const p = heart(t);
 
-    const x = 180 + p.x * SCALE;
-    const y = 180 + p.y * SCALE;
+    const x = 210 + p.x * SCALE;
+    const y = 210 + p.y * SCALE * 1.25; // 🔼 more vertical stretch
 
     item.el.style.left = x + "px";
     item.el.style.top  = y + "px";
-    item.el.style.transform = `rotate(${t * 40}deg)`;
+    item.el.style.transform = `rotate(${t * 35}deg)`;
   });
 
   requestAnimationFrame(animate);
