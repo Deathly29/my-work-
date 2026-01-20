@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Orbiting Love Heart</title>
+<title>Love Heart Flow</title>
 
 <style>
 body {
@@ -16,67 +16,82 @@ body {
   font-family: Arial, sans-serif;
 }
 
-#ui {
-  position: relative;
-  width: 320px;
-  height: 320px;
+/* Perspective container */
+#scene {
+  perspective: 800px;
 }
 
-/* Love text style */
-.love_word {
+/* Heart holder */
+#ui {
+  position: relative;
+  width: 360px;
+  height: 360px;
+  transform: rotateX(55deg);
+}
+
+/* Text style */
+.love {
   position: absolute;
   color: #ff8fb1;
-  font-size: 18px;
+  font-size: 16px;
   letter-spacing: 2px;
   white-space: nowrap;
-  text-shadow: 0 0 12px #fff;
+  text-shadow: 0 0 10px #fff;
 }
 </style>
 </head>
 
 <body>
 
-<div id="ui"></div>
+<div id="scene">
+  <div id="ui"></div>
+</div>
 
 <script>
 const ui = document.getElementById("ui");
-const total = 120;
-const text = "I love you ";
-const speed = 0.0015; // orbit speed
 
-let startTime = Date.now();
+const COUNT = 180;          // number of text segments
+const TEXT  = "I love you ";
+const SPEED = 0.002;        // flow speed
+const SCALE = 9;            // heart size
 
+let start = Date.now();
+const items = [];
+
+/* Heart math */
 function heart(t) {
   return {
     x: 16 * Math.pow(Math.sin(t), 3),
     y: -(13 * Math.cos(t)
-       - 5 * Math.cos(2*t)
-       - 2 * Math.cos(3*t)
-       - Math.cos(4*t))
+      - 5 * Math.cos(2*t)
+      - 2 * Math.cos(3*t)
+      - Math.cos(4*t))
   };
 }
 
-// Create elements
-const words = [];
-for (let i = 0; i < total; i++) {
+/* Create flowing text */
+for (let i = 0; i < COUNT; i++) {
   const span = document.createElement("span");
-  span.className = "love_word";
-  span.innerText = text;
+  span.className = "love";
+  span.textContent = TEXT;
   ui.appendChild(span);
-  words.push({ el: span, offset: i });
+  items.push({ el: span, offset: i / COUNT });
 }
 
-// Animate orbit
+/* Animate flow */
 function animate() {
-  const time = (Date.now() - startTime) * speed;
+  const time = (Date.now() - start) * SPEED;
 
-  words.forEach((w, i) => {
-    const t = time + (i / total) * Math.PI * 2;
+  items.forEach((item, i) => {
+    const t = (item.offset * Math.PI * 2 + time) % (Math.PI * 2);
     const p = heart(t);
 
-    w.el.style.left = 160 + p.x * 8 + "px";
-    w.el.style.top  = 160 + p.y * 8 + "px";
-    w.el.style.transform = `rotate(${t * 40}deg)`;
+    const x = 180 + p.x * SCALE;
+    const y = 180 + p.y * SCALE;
+
+    item.el.style.left = x + "px";
+    item.el.style.top  = y + "px";
+    item.el.style.transform = `rotate(${t * 40}deg)`;
   });
 
   requestAnimationFrame(animate);
